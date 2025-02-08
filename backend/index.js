@@ -59,6 +59,7 @@ app.get('/search-suggestions', async (req, res) => {
         res.status(500).json({ message: "Error fetching location", details: err.message });
     }
 });
+
 app.get("/fetch-hotels", async (req, res) => {
     
     try {
@@ -75,7 +76,6 @@ app.get("/fetch-hotels", async (req, res) => {
         // Use the latitude and longitude for the API request
         const url = 'https://travel-advisor.p.rapidapi.com/hotels/list-by-latlng';
         const params = {
-          
             latitude: latitude,
             longitude: longitude,
             lunit: 'km',
@@ -180,6 +180,48 @@ app.get("/fetch-attractions", async (req, res) => {
     }
 });
 
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
+});
+app.post('/send-email', (req, res) => {
+    const { eventTitle, eventDescription, eventVenue, eventDate, eventTime, eventDistance } = req.body;
+  
+    // Check if all required fields are provided
+    if (!eventTitle || !eventDescription || !eventVenue || !eventDate || !eventTime || !eventDistance) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+  
+    // Prepare the email options
+    const mailOptions = {
+      from: 'your-email@gmail.com', // Sender's email
+      to: 'recipient-email@example.com', // Recipient's email
+      subject: `Nearby Event: ${eventTitle}`,
+      text: `Event Details:
+        Title: ${eventTitle}
+        Description: ${eventDescription}
+        Venue: ${eventVenue}
+        Date: ${eventDate}
+        Time: ${eventTime}
+        Distance: ${eventDistance} km`,
+    };
+  
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).json({ message: 'Error sending email', error: error.message });
+      }
+      res.status(200).json({ message: 'Email sent successfully', info });
+    });
+  });
+  
+
+// Server listening on port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
