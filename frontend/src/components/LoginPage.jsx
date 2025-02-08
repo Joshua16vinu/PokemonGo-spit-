@@ -6,6 +6,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "./AuthContext"; // Import AuthContext hook
 import { signOut } from "firebase/auth";
 import Ballpit from "./Ballpit"; // Ensure this import is correct
+import { useContext } from "react";
+
 
 function LoginPage() {
   const [email, setEmail] = useState("");
