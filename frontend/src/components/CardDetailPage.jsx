@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { db } from '../firebase'; // Import Firestore db instance
+import { auth } from '../firebase'; // Import Firebase Authentication
+import { doc, getDoc, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 
 function CardDetailPage() {
   const { id } = useParams(); // Get the card id from the URL
@@ -8,24 +11,58 @@ function CardDetailPage() {
   const [newComment, setNewComment] = useState('');
 
   useEffect(() => {
-    // Fetch data from JSON file
-    fetch('/data.json')
-      .then((response) => response.json())
-      .then((data) => {
-        const allItems = [...data.events, ...data.announcements, ...data.lostAndFound];
-        const cardDetail = allItems.find(item => item.id === parseInt(id));
-        setCardDetails(cardDetail);
+    // Fetch the card details from Firestore using the ID
+    const cardRef = doc(db, 'reports', id); // 'reports' is your collection name
+    getDoc(cardRef)
+      .then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          setCardDetails(docSnapshot.data());
+        } else {
+          console.log('No such document!');
+        }
       })
-      .catch((error) => console.error('Error fetching data:', error));
+      .catch((error) => {
+        console.error('Error fetching document:', error);
+      });
+
+    // Optionally, fetch comments if they are stored in a subcollection 'comments'
+    const commentsRef = collection(cardRef, 'comments'); // Access 'comments' subcollection
+    const commentsQuery = query(commentsRef, orderBy('timestamp'));
+
+    // Real-time listener to fetch comments
+    const unsubscribe = onSnapshot(commentsQuery, (snapshot) => {
+      const commentsData = snapshot.docs.map((doc) => doc.data());
+      setComments(commentsData);
+    });
+
+    return () => unsubscribe(); // Clean up the listener on unmount
+
   }, [id]);
 
   const handleCommentSubmit = () => {
+    if (!auth.currentUser) {
+      alert("You must be logged in to comment.");
+      return;
+    }
+  
     if (newComment.trim()) {
-      setComments([...comments, { text: newComment, timestamp: new Date().toISOString() }]);
-      setNewComment('');
+      const userEmail = auth.currentUser.email; // Ensure the user is authenticated
+  
+      const commentRef = collection(db, 'reports', id, 'comments'); // Access subcollection
+      addDoc(commentRef, {
+        text: newComment,
+        timestamp: new Date().toISOString(),
+        userEmail: userEmail, // Save the user's email
+      })
+        .then(() => {
+          setNewComment('');
+        })
+        .catch((error) => {
+          console.error('Error posting comment:', error);
+        });
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       {cardDetails ? (
@@ -70,6 +107,7 @@ function CardDetailPage() {
             {comments.map((comment, index) => (
               <div key={index} className="mb-2 p-3 bg-gray-800 rounded-md">
                 <p>{comment.text}</p>
+                <small>Posted by: {comment.userEmail}</small><br />
                 <small>Posted on: {new Date(comment.timestamp).toLocaleString()}</small>
               </div>
             ))}
