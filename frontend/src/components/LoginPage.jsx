@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithP
 import { auth, googleProvider } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "./AuthContext"; // Import AuthContext hook
+import { signOut } from "firebase/auth";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,16 +33,18 @@ function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const googleUser = result.user;
-      login(googleUser.email); // Update auth state globally
+      await signOut(auth); // Ensure the user is logged out before attempting Google login
+      const result = await signInWithPopup(auth, googleProvider); // Open Google sign-in popup
+      const googleUser = result.user; // This will contain user data after login
+      login(googleUser.email); // Save user email globally using your context
       alert("Google Login successful!");
-      navigate("/home");
+      navigate("/home"); // Redirect to home page after successful login
     } catch (error) {
       console.error("Google Login error:", error.code, error.message);
       alert(`Google Login failed: ${error.message}`);
     }
   };
+  
   
 
   return (

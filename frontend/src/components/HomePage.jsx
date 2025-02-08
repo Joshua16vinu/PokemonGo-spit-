@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import OtherNotifications from './OtherNotifications'; // Import for OtherNotifications component
 import LostAndFound from './LostAndFound'; // Import for LostAndFound component
 import MapView from './MapView'; // Import for MapView component
+import { signOut } from 'firebase/auth'; // Import signOut from Firebase
+import { auth } from '../firebase'; // Firebase authentication instance
+import { useAuth } from './AuthContext'; // Assuming you have AuthContext to manage authentication state
 
 function HomePage() {
   const [location, setLocation] = useState(null); // To store user's location (latitude & longitude)
   const [area, setArea] = useState('Fetching location...'); // To store user's area name
   const navigate = useNavigate(); // For navigation between pages
+  const { logout } = useAuth(); // Use logout function from AuthContext (if using context to manage auth)
 
   // Reverse Geocoding Function to fetch area name based on latitude and longitude
   const fetchAreaName = async (latitude, longitude) => {
@@ -47,6 +51,18 @@ function HomePage() {
   // Handle "Report" button click to navigate to the report page
   const handleReport = () => {
     navigate('/report');
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Sign out from Firebase
+      logout(); // Update auth state in context
+      navigate('/'); // Navigate to login page after logout
+    } catch (error) {
+      console.error('Error logging out:', error);
+      alert('Logout failed. Please try again.');
+    }
   };
 
   // Example event and lost-and-found data (you can replace it with actual data or fetch from API)
@@ -95,6 +111,14 @@ function HomePage() {
         className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white font-bold p-5 rounded-full shadow-lg"
       >
         +
+      </button>
+
+      {/* Logout Button */}
+      <button
+        onClick={handleLogout}
+        className="fixed bottom-16 right-6 bg-red-600 hover:bg-red-700 text-white font-bold p-4 rounded-full shadow-lg"
+      >
+        Logout
       </button>
     </div>
   );

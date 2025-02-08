@@ -551,6 +551,9 @@
   .bottom-6 {
     bottom: calc(var(--spacing) * 6);
   }
+  .bottom-16 {
+    bottom: calc(var(--spacing) * 16);
+  }
   .\!container {
     width: 100% !important;
     @media (width >= 40rem) {
@@ -771,6 +774,9 @@
   .bg-gray-900 {
     background-color: var(--color-gray-900);
   }
+  .bg-red-600 {
+    background-color: var(--color-red-600);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -946,6 +952,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-200);
+      }
+    }
+  }
+  .hover\:bg-red-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-red-700);
       }
     }
   }
