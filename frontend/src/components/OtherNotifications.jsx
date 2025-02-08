@@ -1,22 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import Card from './Card';
 import { useNavigate } from 'react-router-dom';
+import { getFirestore, collection, getDocs } from 'firebase/firestore'; // Import necessary Firebase methods
+import Card from './Card';
 
 function OtherNotifications() {
   const navigate = useNavigate();
   const [eventNotifications, setEventNotifications] = useState([]);
   const [announcementNotifications, setAnnouncementNotifications] = useState([]);
+  const db = getFirestore(); // Firebase Firestore instance
 
   useEffect(() => {
-    // Fetch data from the JSON file
-    fetch('/data.json')
-      .then((response) => response.json())
-      .then((data) => {
-        setEventNotifications(data.events);
-        setAnnouncementNotifications(data.announcements);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []);
+    const fetchData = async () => {
+      try {
+        // Fetch reports collection from Firebase Firestore
+        const reportsCollection = collection(db, "reports");
+        const querySnapshot = await getDocs(reportsCollection);
+
+        const events = [];
+        const announcements = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Make sure the data has all required fields
+          if (data.issueType === "e") {
+            events.push({
+              id: data.reportId,
+              image: data.imageUrl,
+              title: data.title || "Unknown",
+              description: data.location,
+            });
+          } else if(data.issueType === "ann") {
+            announcements.push({
+              id: data.reportId,
+              image: data.imageUrl,
+              title: data.title || "Unknown",
+              description: data.location,
+            });
+          }
+        });
+
+        setEventNotifications(events);
+        setAnnouncementNotifications(announcements);
+      } catch (error) {
+        console.error('Error fetching data from Firebase:', error);
+      }
+    };
+
+    fetchData();
+  }, [db]);
 
   const handleEventCardClick = (eventId) => {
     navigate(`/discussion/${eventId}`);
