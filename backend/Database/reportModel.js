@@ -32,14 +32,14 @@ const verifyReport = async (reportId, isFlagged = false) => {
     if (!report.exists) return { success: false, error: "Report not found" };
 
     const data = report.data();
-    let updatedCount = isFlagged
+    let updateFields = isFlagged
       ? { flaggedCount: admin.firestore.FieldValue.increment(1) }
       : { verificationCount: admin.firestore.FieldValue.increment(1) };
 
-    await reportRef.update(updatedCount);
+    await reportRef.update(updateFields);
 
     // If 3 verifications, mark as "verified" & increase credibility
-    if (data.verificationCount + 1 >= 3) {
+    if (!isFlagged && data.verificationCount + 1 >= 3) {
       await reportRef.update({ status: "verified" });
       await usersRef.doc(data.email).update({
         credibilityScore: admin.firestore.FieldValue.increment(10),
@@ -47,7 +47,7 @@ const verifyReport = async (reportId, isFlagged = false) => {
     }
 
     // If 2 flags, mark as "flagged"
-    if (data.flaggedCount + 1 >= 2) {
+    if (isFlagged && data.flaggedCount + 1 >= 2) {
       await reportRef.update({ status: "flagged" });
     }
 
@@ -55,7 +55,6 @@ const verifyReport = async (reportId, isFlagged = false) => {
   } catch (error) {
     return { success: false, error: error.message };
   }
- 
-
 };
+
 module.exports = { createReport, verifyReport };

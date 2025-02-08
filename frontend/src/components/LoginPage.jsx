@@ -9,24 +9,24 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+  
     try {
       const response = await axios.post("http://localhost:5000/api/users/login", {
         email,
         password,
       });
-
+  
       if (response.data.success) {
+        localStorage.setItem("userEmail", email); // Store email
         alert("Login successful!");
         navigate("/report"); // Redirect to report page
-      } else {
-        alert(response.data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed! Check your credentials.");
+      alert("Login failed. Please check your credentials.");
     }
   };
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
       <div className="flex w-full max-w-5xl shadow-lg rounded-lg">

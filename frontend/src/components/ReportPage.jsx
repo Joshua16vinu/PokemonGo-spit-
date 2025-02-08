@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
 
 function ReportPage() {
-  const [image, setImage] = useState(null);
-  const [location, setLocation] = useState('');
-  const [status] = useState('pending'); // Status is set internally, no user input
-  const [timestamp, setTimestamp] = useState(new Date().toISOString());
+  const [imageBase64, setImageBase64] = useState("");
+  const [location, setLocation] = useState("");
+  const [status] = useState("pending");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch location using Geolocation API
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -16,47 +14,88 @@ function ReportPage() {
           setLocation(`Lat: ${latitude}, Lon: ${longitude}`);
         },
         (error) => {
-          console.error('Error fetching location:', error);
-          alert('Failed to fetch location.');
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              alert("Location permission denied. Please allow access.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              alert("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              alert("Location request timed out.");
+              break;
+            default:
+              alert("An unknown error occurred while fetching location.");
+          }
+          console.error("Geolocation error:", error);
         }
       );
     } else {
-      alert('Geolocation is not supported by this browser.');
+      alert("Geolocation is not supported by this browser.");
     }
-
-    // Automatically update timestamp every time the component is rendered
-    setTimestamp(new Date().toISOString());
   }, []);
 
   const handleImageUpload = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+
+    if (!file) return;
+    
+    // Restrict file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size should be less than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => setImageBase64(reader.result);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!image || !location) {
-      alert('Please provide all required details.');
+
+    if (!imageBase64 || !location) {
+      alert("Please provide all required details.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append('image', image);
-    formData.append('location', location);
-    formData.append('status', status);
-    formData.append('timestamp', timestamp);
+    setIsSubmitting(true);
 
     try {
-      // Replace 'YOUR_API_URL' with your actual API endpoint
-      const response = await axios.post('YOUR_API_URL', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      // Create FormData object
+      const formData = new FormData();
+      
+      // Convert base64 to file
+      const base64Response = await fetch(imageBase64);
+      const blob = await base64Response.blob();
+      const imageFile = new File([blob], "report-image.jpg", { type: 'image/jpeg' });
+      
+      // Append all required fields
+      formData.append("image", imageFile);
+      formData.append("email", "harshitheroh5@gmail.com");
+      formData.append("issueType", "store_issue"); // Added issueType as required by backend
+      formData.append("location", location);
+
+      const response = await fetch("http://localhost:5000/api/reports/submit", {
+        method: 'POST',
+        body: formData,
       });
-      console.log(response.data);
-      alert('Report submitted successfully!');
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Report submitted successfully!");
+        // Reset form
+        setImageBase64("");
+        e.target.reset();
+      } else {
+        throw new Error(data.error || "Failed to submit report");
+      }
     } catch (error) {
-      console.error('Error submitting report:', error);
-      alert('Failed to submit report.');
+      console.error("Error submitting report:", error);
+      alert(`Failed to submit report: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -78,6 +117,7 @@ function ReportPage() {
             <label className="block mb-2 text-sm font-medium">Upload Image:</label>
             <input
               type="file"
+              accept="image/*"
               onChange={handleImageUpload}
               required
               className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
@@ -87,16 +127,21 @@ function ReportPage() {
             <label className="block mb-2 text-sm font-medium">Timestamp:</label>
             <input
               type="text"
-              value={timestamp}
+              value={new Date().toLocaleString()}
               readOnly
               className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isSubmitting}
+            className={`w-full font-semibold py-2 rounded-md focus:outline-none focus:ring-2 ${
+              isSubmitting
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500"
+            }`}
           >
-            Submit Report
+            {isSubmitting ? "Submitting..." : "Submit Report"}
           </button>
         </form>
       </div>
