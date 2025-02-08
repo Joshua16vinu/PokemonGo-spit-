@@ -725,6 +725,9 @@
   .max-w-sm {
     max-width: var(--container-sm);
   }
+  .min-w-screen {
+    min-width: 100vw;
+  }
   .flex-1 {
     flex: 1;
   }
