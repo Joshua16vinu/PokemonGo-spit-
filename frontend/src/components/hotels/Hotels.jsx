@@ -10,10 +10,37 @@ export default function Hotels({ query }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [minRating, setMinRating] = useState(0);
-  const [selectedLocation, setSelectedLocation] = useState(null); // Track selected location for map centering
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
-  const [zoomedImage, setZoomedImage] = useState(null); // Image for zooming
-  const [, setImageLoading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState(null);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [mapCenter, setMapCenter] = useState([12.921432, 100.85973]);
+
+  const calculateMapCenter = useCallback((locations) => {
+    if (!locations || locations.length === 0) {
+      return [12.921432, 100.85973]; // Default coordinates
+    }
+
+    const validLocations = locations.filter(
+      loc => loc.latitude && loc.longitude && 
+      !isNaN(parseFloat(loc.latitude)) && 
+      !isNaN(parseFloat(loc.longitude))
+    );
+
+    if (validLocations.length === 0) {
+      return [12.921432, 100.85973]; // Default coordinates
+    }
+
+    const sumLat = validLocations.reduce((sum, loc) => 
+      sum + parseFloat(loc.latitude), 0);
+    const sumLng = validLocations.reduce((sum, loc) => 
+      sum + parseFloat(loc.longitude), 0);
+
+    return [
+      sumLat / validLocations.length,
+      sumLng / validLocations.length
+    ];
+  }, []);
 
   const initDB = async () => {
     return await openDB("TravelData", 1, {
@@ -53,11 +80,11 @@ export default function Hotels({ query }) {
         if (cachedData) {
           console.log("Data loaded from IndexedDB");
           setLocations(cachedData.data);
+          setMapCenter(calculateMapCenter(cachedData.data));
           setLoading(false);
           return;
         }
 
-     
         const response = await fetch(`http://localhost:5000/fetch-hotels?query=${query}`, {
           method: "GET",
           headers: {
@@ -76,6 +103,7 @@ export default function Hotels({ query }) {
 
         if (data && Array.isArray(data.data)) {
           setLocations(data.data);
+          setMapCenter(calculateMapCenter(data.data));
           saveToIndexedDB(query, data.data);
         } else {
           setLocations([]);
@@ -89,9 +117,8 @@ export default function Hotels({ query }) {
     };
 
     fetchHotels();
-  }, [query, saveToIndexedDB, getFromIndexedDB]);
+  }, [query, saveToIndexedDB, getFromIndexedDB, calculateMapCenter]);
 
-  // Function to render the star rating
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
@@ -102,26 +129,21 @@ export default function Hotels({ query }) {
     return stars;
   };
 
-  // Function to handle rating filter change from slider
   const handleRatingChange = (event) => {
     setMinRating(Number(event.target.value));
   };
 
-  // Filter the hotels based on the selected minimum rating
   const filteredLocations = locations.filter((location) => location.rating >= minRating);
 
-  // Function to handle marker click, update selected location and map center
   const handleMarkerClick = (location) => {
-    setSelectedLocation(location); // Set the selected location
+    setSelectedLocation(location);
   };
 
-  // Custom icon for the markers
   const hotelIcon = new Icon({
     iconUrl: '/images/download1.png',
     iconSize: [30, 30],
   });
 
-  // MapUpdater component to shift map center dynamically
   function MapUpdater() {
     const map = useMap();
 
@@ -131,31 +153,31 @@ export default function Hotels({ query }) {
         if (latitude && longitude) {
           map.setView([parseFloat(latitude), parseFloat(longitude)], 13);
         }
+      } else {
+        map.setView(mapCenter, 13);
       }
-    }, [ map]);
+    }, [selectedLocation, map]);
 
     return null;
   }
 
-  // Open the modal and set the image for zooming
   const handleImageClick = (imageUrl) => {
     setZoomedImage(imageUrl);
     setIsModalOpen(true);
   };
 
-  // Close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setZoomedImage(null);
   };
 
   const handleImageLoad = () => {
-    setImageLoading(false); // Image loaded, stop showing loading indicator
+    setImageLoading(false);
   };
 
   const handleImageError = (e) => {
-    e.target.src = "/images/restaurant.png"; // Fallback image on error
-    setImageLoading(false); // Stop loading indicator
+    e.target.src = "/images/restaurant.png";
+    setImageLoading(false);
   };
 
   return (
@@ -209,7 +231,12 @@ export default function Hotels({ query }) {
       )}
 
       <div style={{ height: "400px", marginTop: "20px" }}>
-        <MapContainer center={[12.921432, 100.85973]} zoom={13} style={{ height: "100%", width: "100%" }}>
+        <MapContainer 
+          center={mapCenter} 
+          zoom={13} 
+          style={{ height: "100%", width: "100%" }}
+          key={mapCenter.join(',')}
+        >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />

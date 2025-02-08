@@ -14,6 +14,7 @@ const Restaurants = ({ query }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [zoomedImage, setZoomedImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(false); // Track loading state of images
+  const [mapCenter, setMapCenter] = useState([12.921432, 100.85973]);
 
   // Open the IndexedDB database
   const openDatabase = useCallback(async () => {
@@ -43,6 +44,32 @@ const Restaurants = ({ query }) => {
     return data;
   }, [openDatabase, query]);
 
+  const calculateMapCenter = useCallback((locations) => {
+    if (!locations || locations.length === 0) {
+      return [12.921432, 100.85973]; // Default coordinates
+    }
+
+    const validLocations = locations.filter(
+      loc => loc.latitude && loc.longitude && 
+      !isNaN(parseFloat(loc.latitude)) && 
+      !isNaN(parseFloat(loc.longitude))
+    );
+
+    if (validLocations.length === 0) {
+      return [12.921432, 100.85973]; // Default coordinates
+    }
+
+    const sumLat = validLocations.reduce((sum, loc) => 
+      sum + parseFloat(loc.latitude), 0);
+    const sumLng = validLocations.reduce((sum, loc) => 
+      sum + parseFloat(loc.longitude), 0);
+
+    return [
+      sumLat / validLocations.length,
+      sumLng / validLocations.length
+    ];
+  }, []);
+
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -51,15 +78,14 @@ const Restaurants = ({ query }) => {
         if (cachedData) {
           console.log('Using cached data');
           setLocations(cachedData);
+          setMapCenter(calculateMapCenter(cachedData));
           setLoading(false);
         } else {
           // If no data in IDB, fetch from the API
-         
-
           const response = await fetch(`http://localhost:5000/fetch-restaurants?query=${query}`, {
             method: 'GET',
             headers: {
-              Authorization: `Bearer`,
+              Authorization: `Bearer`, // Update with your token if needed
             },
             credentials: 'include',
           });
@@ -88,7 +114,7 @@ const Restaurants = ({ query }) => {
     };
 
     fetchRestaurants();
-  }, [query, getDataFromIDB, storeDataInIDB]);
+  }, [query, getDataFromIDB, storeDataInIDB, calculateMapCenter]);
 
   const renderStars = (rating) => {
     const stars = [];
@@ -121,36 +147,16 @@ const Restaurants = ({ query }) => {
   };
 
   const handleImageLoad = () => {
-    setImageLoading(false); // Image loaded, stop showing loading indicator
+    setImageLoading(false);
   };
 
   const handleImageError = (e) => {
-    setImageLoading(false); // Image error, stop loading indicator
+    e.target.src = "/images/restaurant.png"; // Default image if error occurs
+    setImageLoading(false);
   };
-  
-  const hotelIcon = new Icon({
-    iconUrl: '/images/restaurant.png',
-    iconSize: [30, 30],
-  });
-  
-  // MapUpdater component to shift map center dynamically
-  function MapUpdater() {
-    const map = useMap();
-
-    useEffect(() => {
-      if (selectedLocation) {
-        const { latitude, longitude } = selectedLocation;
-        if (latitude && longitude) {
-          map.setView([parseFloat(latitude), parseFloat(longitude)], 13);
-        }
-      }
-    }, [map]);
-
-    return null;
-  }
 
   return (
-    <div className="restaurant-main">
+    <div>
       <div className="rating-filter">
         <label htmlFor="rating">Minimum Rating: </label>
         <input 
@@ -170,18 +176,17 @@ const Restaurants = ({ query }) => {
       ) : error ? (
         <p>{error}</p>
       ) : filteredLocations.length > 0 ? (
-        <div className="restaurant-grid">
+        <div className="hotel-grid">
           {filteredLocations.map((location, index) => (
             <div key={index} className="restaurant-card">
               <img 
-                src={location.photo?.images?.large?.url ||"/images/restaurant.png"} 
+                src={location.photo?.images?.large?.url || "/images/restaurant.png"} 
                 alt={location.name || 'Restaurant image'} 
                 className="restaurant-image" 
                 onClick={() => handleImageClick(location.photo?.images?.original?.url)} 
-                onLoad={handleImageLoad} // When the image loads
-                onError={handleImageError} // When the image fails to load
+                onLoad={handleImageLoad} 
+                onError={handleImageError} 
               />
-              {imageLoading && <div className="loading-overlay">Loading...</div>} {/* Show a loading overlay */}
               <div className="restaurant-info">
                 <h3>{location.name}</h3>
                 <p>{location.location_string}</p>
@@ -189,7 +194,7 @@ const Restaurants = ({ query }) => {
                 <p><strong>Rating: </strong>{location.rating} ({location.num_reviews} reviews)</p>
                 <p className="price"><strong>Price: </strong>{location.price_level} {location.price}</p>
                 {location.ranking && <p className="restaurant-ranking"><strong>Ranking: </strong>{location.ranking}</p>}
-                <a href={`https://www.tripadvisor.com/Hotel_Review-${location.location_id}`} target="_blank" rel="noopener noreferrer">
+                <a href={`https://www.tripadvisor.com/Restaurant_Review-${location.location_id}`} target="_blank" rel="noopener noreferrer">
                   View Details & Book
                 </a>
               </div>
@@ -199,8 +204,14 @@ const Restaurants = ({ query }) => {
       ) : (
         <p>No results found</p>
       )}
+
       <div style={{ height: "400px", marginTop: "20px" }}>
-        <MapContainer center={[12.921432, 100.85973]} zoom={13} style={{ height: "100%", width: "100%" }}>
+        <MapContainer 
+          center={mapCenter} 
+          zoom={13} 
+          style={{ height: "100%", width: "100%" }}
+          key={mapCenter.join(',')}
+        >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
@@ -208,9 +219,9 @@ const Restaurants = ({ query }) => {
             <Marker
               key={index}
               position={[parseFloat(location.latitude), parseFloat(location.longitude)]}
-              icon={hotelIcon}
+              icon={new Icon({ iconUrl: '/images/download1.png', iconSize: [30, 30] })}
               eventHandlers={{
-                click: () => handleMarkerClick(location), // Update selected location on click
+                click: () => handleMarkerClick(location),
               }}
             >
               <Popup>
@@ -220,7 +231,6 @@ const Restaurants = ({ query }) => {
               </Popup>
             </Marker>
           ))}
-          <MapUpdater /> {/* Add this component to handle map updates */}
         </MapContainer>
       </div>
 
