@@ -1,32 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import OtherNotifications from './OtherNotifications';
+import LostAndFound from './LostAndFound';
 
 function HomePage() {
   const [location, setLocation] = useState('');
   const [area, setArea] = useState('Fetching location...');
   const navigate = useNavigate();
 
-  // Reverse Geocoding Function (You can use any geocoding API, this is a placeholder)
+  // Reverse Geocoding Function (Fetch Area Name)
   const fetchAreaName = async (latitude, longitude) => {
     try {
-      // Example API call (use a real API here)
       const response = await fetch(`https://geocode.xyz/${latitude},${longitude}?geoit=json`);
       const data = await response.json();
-      setArea(data.city || 'Unknown Location'); // Extract city or area name from API response
+      if (data.city) {
+        setArea(data.city);
+      } else {
+        setArea('Unknown Location');
+      }
     } catch (error) {
       console.error('Error fetching area name:', error);
       setArea('Unable to determine location');
     }
   };
 
-  // Fetch location and show area-based notifications/updates
+  // Fetch the User's Geolocation
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation(`Lat: ${latitude}, Lon: ${longitude}`);
-          fetchAreaName(latitude, longitude); // Fetch area name based on coordinates
+          fetchAreaName(latitude, longitude);
         },
         (error) => {
           console.error('Error fetching location:', error);
@@ -44,26 +49,17 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Welcome to the Store Issue Reporting System</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">PokemonGo! Issue Reporting System</h1>
 
-      {/* Notifications/Updates Section with Image */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 flex">
-        <div className="w-2/3">
-          <h2 className="text-2xl font-semibold mb-4">Notifications & Updates</h2>
-          <p className="text-lg">Location: {area}</p>
-          <p className="mt-2">
-            {/* Example notification */}
-            Check out the recent store updates in your area!
-          </p>
+      <div className="flex flex-col md:flex-row min-h-screen">
+        {/* Left Section - Other Notifications (Takes up more space on wider screens) */}
+        <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
+          <OtherNotifications />
         </div>
 
-        {/* Image Section */}
-        <div className="w-1/3 pl-4">
-          <img
-            src="https://via.placeholder.com/300" // Replace with a real image URL
-            alt="Store"
-            className="w-full h-auto rounded-lg shadow-lg"
-          />
+        {/* Right Section - Lost and Found (Takes up less space) */}
+        <div className="md:w-1/3 w-full md:pl-4">
+          <LostAndFound area={area} />
         </div>
       </div>
 
