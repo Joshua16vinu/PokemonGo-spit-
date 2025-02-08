@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Map, LayoutDashboard, Plus } from 'lucide-react';
 import OtherNotifications from './OtherNotifications';
@@ -12,8 +12,12 @@ function HomePage() {
   const [location, setLocation] = useState(null);
   const [area, setArea] = useState('Fetching location...');
   const [viewMode, setViewMode] = useState('dashboard');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false); // Added for suggestions dropdown
   const navigate = useNavigate();
-  const { logout } = useAuth(); // Use logout function from AuthContext (if using context to manage auth)
+  const { logout } = useAuth();
+  const dropdownRef = useRef(null);
 
   // Reverse Geocoding Function to fetch area name based on latitude and longitude
   const fetchAreaName = async (latitude, longitude) => {
@@ -65,6 +69,53 @@ function HomePage() {
     }
   };
 
+  // Search query handling
+  const handleSearch = () => {
+    if (searchQuery.trim() === '') {
+      alert('Please enter a search term.');
+      return;
+    }
+    console.log(searchQuery);
+    navigate(`/results?query=${searchQuery}`);
+  };
+
+  const handleInputChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.trim() === '') {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/search-suggestions?query=${query}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      if (data.length === 0) {
+        setSuggestions(['No matches found']);
+      } else {
+        setSuggestions(data);
+      }
+
+      setShowSuggestions(true);
+    } catch (err) {
+      console.error('Error fetching suggestions:', err.message);
+      setSuggestions([`Error: ${err.message}`]);
+      setShowSuggestions(true);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+  };
+
   const eventLocations = [
     { latitude: 20.5937, longitude: 78.9629, description: 'Event 1' },
     { latitude: 19.076, longitude: 72.8777, description: 'Event 2' },
@@ -77,9 +128,8 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      
       {/* Icon Navigation aligned to the extreme right */}
-      <div className="flex  ml-auto">
+      <div className="flex ml-auto">
         <button
           aria-label="Map View"
           className={`p-3 rounded-md transition-colors m-2 ${
@@ -118,6 +168,30 @@ function HomePage() {
               eventLocations={eventLocations}
               lostAndFoundLocations={lostAndFoundLocations}
             />
+          </div>
+        )}
+      </div>
+
+      {/* Search Bar */}
+      <div className="search-bar" ref={dropdownRef}>
+        <input
+          type="text"
+          placeholder="Where do you want to go?"
+          value={searchQuery}
+          onChange={handleInputChange}
+        />
+        <button onClick={handleSearch}>Search</button>
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="suggestions-dropdown">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="suggestion-item"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </div>
+            ))}
           </div>
         )}
       </div>
