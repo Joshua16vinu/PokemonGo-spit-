@@ -8,7 +8,10 @@ const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 app.use(cors());
+// app.use(express.json());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 app.use("/api/users", userRoutes);

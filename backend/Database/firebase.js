@@ -9,7 +9,7 @@ const serviceAccount = require("./firebase.json");
 // Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  
 });
 
 const db = admin.firestore();
