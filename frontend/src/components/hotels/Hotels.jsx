@@ -57,17 +57,11 @@ export default function Hotels({ query }) {
           return;
         }
 
-        const token = document.cookie.split("; ").find((row) => row.startsWith("token="))?.split("=")[1];
-        if (!token) {
-          setError("Unauthorized: Token not found");
-          setLoading(false);
-          return;
-        }
-
+     
         const response = await fetch(`http://localhost:5000/fetch-hotels?query=${query}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer `,
           },
           credentials: "include",
         });
