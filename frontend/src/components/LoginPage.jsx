@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Simple login validation
-    if (email === 'test@example.com' && password === 'password') {
-      // Redirect to report page on successful login
-      navigate('/report');
-    } else {
-      alert('Invalid email or password');
+    try {
+      const response = await axios.post("http://localhost:5000/api/users/login", {
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        alert("Login successful!");
+        navigate("/report"); // Redirect to report page
+      } else {
+        alert(response.data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed! Check your credentials.");
     }
   };
 
