@@ -1,4 +1,4 @@
-const { reportsRef, usersRef } = require("./firebase");
+const { reportsRef, usersRef, admin } = require("./firebase");
 
 // Function to create a report
 const createReport = async (email, issueType, location, imageUrl) => {
@@ -55,6 +55,7 @@ const verifyReport = async (reportId, isFlagged = false) => {
   } catch (error) {
     return { success: false, error: error.message };
   }
-};
+ 
 
+};
 module.exports = { createReport, verifyReport };
