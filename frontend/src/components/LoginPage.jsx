@@ -52,7 +52,7 @@ function LoginPage() {
       </div>
 
       {/* Login Form (Foreground) */}
-      <div className="relative z-10 w-full max-w-5xl shadow-lg rounded-lg backdrop-blur-md bg-gray-900 bg-opacity-80">
+      <div className="relative z-10 w-full max-w-5xl shadow-lg  backdrop-blur-4xl bg-gray-900 bg-opacity-10">
         <div className="flex">
           {/* Left Panel */}
           <div className="w-1/2 p-8 flex flex-col justify-center text-white">
@@ -82,7 +82,7 @@ function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label className="block mb-2 text-sm font-medium">Email:</label>
+                <label className="block mb-2 text-sm font-medium text-white">Email:</label>
                 <input
                   type="email"
                   value={email}
@@ -92,7 +92,7 @@ function LoginPage() {
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium">Password:</label>
+                <label className="block mb-2 text-sm font-medium text-white">Password:</label>
                 <input
                   type="password"
                   value={password}
