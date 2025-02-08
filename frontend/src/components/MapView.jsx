@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -17,10 +17,16 @@ function MapView({ userLocation, eventLocations, lostAndFoundLocations }) {
   const defaultPosition = [20.5937, 78.9629]; // Default position (India) if user location is not available
   const userPosition = userLocation ? [userLocation.latitude, userLocation.longitude] : defaultPosition;
 
+  // Updated event descriptions
+  const updatedEventLocations = [
+    { ...eventLocations[0], description: 'Event 1: AI Summit' },
+    { ...eventLocations[1], description: 'Event 2' },
+    { latitude: 22.5726, longitude: 88.3639, description: 'Event 3' }
+  ];
+
   return (
-    <div className="map-container" style={{ height: '400px', width: '100%' }}>
+    <div className="map-container" style={{ height: '600px', width: '100%' }}>
       <MapContainer center={userPosition} zoom={5} style={{ height: '100%', width: '100%' }}>
-        {/* Tile Layer (Map Background) */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -29,24 +35,53 @@ function MapView({ userLocation, eventLocations, lostAndFoundLocations }) {
         {/* User Location Marker */}
         {userLocation && (
           <Marker position={userPosition}>
-            <Popup>Your Location</Popup>
+            <Tooltip permanent direction="top" offset={[0, -20]} className="custom-tooltip">
+              Your Location
+            </Tooltip>
           </Marker>
         )}
 
         {/* Event Locations */}
-        {eventLocations.map((event, index) => (
-          <Marker key={index} position={[event.latitude, event.longitude]}>
-            <Popup>{event.description}</Popup>
+        {updatedEventLocations.map((event, index) => (
+          <Marker 
+            key={index} 
+            position={[event.latitude, event.longitude]}
+          >
+            <Tooltip permanent direction="top" offset={[0, -20]} className="custom-tooltip">
+              {event.description}
+            </Tooltip>
           </Marker>
         ))}
 
         {/* Lost and Found Locations */}
         {lostAndFoundLocations.map((item, index) => (
-          <Marker key={index} position={[item.latitude, item.longitude]}>
-            <Popup>{item.description}</Popup>
+          <Marker 
+            key={index} 
+            position={[item.latitude, item.longitude]}
+          >
+            <Tooltip permanent direction="top" offset={[0, -20]} className="custom-tooltip">
+              {item.description}
+            </Tooltip>
           </Marker>
         ))}
       </MapContainer>
+
+      {/* Custom styles for tooltips */}
+      <style>
+        {`
+          .custom-tooltip {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            font-weight: 500;
+          }
+          .custom-tooltip::before {
+            border-top-color: rgba(0, 0, 0, 0.8);
+          }
+        `}
+      </style>
     </div>
   );
 }

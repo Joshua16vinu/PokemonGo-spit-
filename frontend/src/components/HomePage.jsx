@@ -1,55 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OtherNotifications from './OtherNotifications'; // Import for OtherNotifications component
-import LostAndFound from './LostAndFound'; // Import for LostAndFound component
-import MapView from './MapView'; // Import for MapView component
+import { Map, LayoutDashboard, Plus } from 'lucide-react';
+import OtherNotifications from './OtherNotifications';
+import LostAndFound from './LostAndFound';
+import MapView from './MapView';
 
 function HomePage() {
-  const [location, setLocation] = useState(null); // To store user's location (latitude & longitude)
-  const [area, setArea] = useState('Fetching location...'); // To store user's area name
-  const navigate = useNavigate(); // For navigation between pages
+  const [location, setLocation] = useState(null);
+  const [area, setArea] = useState('Fetching location...');
+  const [viewMode, setViewMode] = useState('dashboard');
+  const navigate = useNavigate();
 
-  // Reverse Geocoding Function to fetch area name based on latitude and longitude
   const fetchAreaName = async (latitude, longitude) => {
     try {
-      const response = await fetch(`https://geocode.xyz/${latitude},${longitude}?geoit=json`); // Using geocode.xyz API for reverse geocoding
+      const response = await fetch(`https://geocode.xyz/${latitude},${longitude}?geoit=json`);
       const data = await response.json();
       if (data.city) {
-        setArea(data.city); // If city name is found, update the area
+        setArea(data.city);
       } else {
-        setArea('Unknown Location'); // Handle case where city isn't available
+        setArea('Unknown Location');
       }
     } catch (error) {
       console.error('Error fetching area name:', error);
-      setArea('Unable to determine location'); // Fallback in case of error
+      setArea('Unable to determine location');
     }
   };
 
-  // Fetch the user's geolocation when the component mounts
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude }); // Set user's location
-          fetchAreaName(latitude, longitude); // Fetch area name using reverse geocoding
+          setLocation({ latitude, longitude });
+          fetchAreaName(latitude, longitude);
         },
         (error) => {
           console.error('Error fetching location:', error);
-          setArea('Failed to fetch location.'); // Error handling for geolocation
+          setArea('Failed to fetch location.');
         }
       );
     } else {
-      setArea('Geolocation is not supported by this browser.'); // If geolocation isn't supported
+      setArea('Geolocation is not supported by this browser.');
     }
   }, []);
 
-  // Handle "Report" button click to navigate to the report page
   const handleReport = () => {
     navigate('/report');
   };
 
-  // Example event and lost-and-found data (you can replace it with actual data or fetch from API)
   const eventLocations = [
     { latitude: 20.5937, longitude: 78.9629, description: 'Event 1' },
     { latitude: 19.076, longitude: 72.8777, description: 'Event 2' },
@@ -61,40 +59,69 @@ function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      {/* Page Title */}
-      <h1 className="text-3xl font-bold mb-6 text-center">PokemonGo! Issue Reporting System</h1>
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header Section with new layout */}
+      <div className="w-full bg-slate-900 border-b border-slate-800 p-6">
+        <div className="flex justify-between max-w-[1400px] mx-auto">
+          {/* Title only shown in dashboard mode, aligned to the left */}
+          {viewMode === 'dashboard' && (
+            <h1 className="text-3xl font-bold">PokemonGo! Issue Reporting System</h1>
+          )}
+          
+          {/* Icon Navigation aligned to the right */}
+          <div className="flex gap-4 ml-auto">
+            <button
+              aria-label="Map View"
+              className={`p-3 rounded-md transition-colors ${
+                viewMode === 'map' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
+              }`}
+              onClick={() => setViewMode('map')}
+            >
+              <Map size={24} />
+            </button>
+            <button
+              aria-label="Dashboard View"
+              className={`p-3 rounded-md transition-colors ${
+                viewMode === 'dashboard' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
+              }`}
+              onClick={() => setViewMode('dashboard')}
+            >
+              <LayoutDashboard size={24} />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content Section */}
-      <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Left Section - Other Notifications */}
-        <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
-          <OtherNotifications />
-        </div>
-
-        {/* Right Section - Lost and Found */}
-        <div className="md:w-1/3 w-full md:pl-4">
-          <LostAndFound area={area} /> {/* Passing area to LostAndFound component */}
-        </div>
+      <div className="p-8">
+        {viewMode === 'dashboard' ? (
+          <div className="flex flex-col md:flex-row min-h-screen">
+            <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
+              <OtherNotifications />
+            </div>
+            <div className="md:w-1/3 w-full md:pl-4">
+              <LostAndFound area={area} />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-8">
+           
+            <MapView
+              userLocation={location}
+              eventLocations={eventLocations}
+              lostAndFoundLocations={lostAndFoundLocations}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Map View Section */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Map View</h2>
-        {/* Passing event and lost-and-found locations to the MapView component */}
-        <MapView
-          userLocation={location}
-          eventLocations={eventLocations}
-          lostAndFoundLocations={lostAndFoundLocations}
-        />
-      </div>
-
-      {/* Floating "+" Button to report a new issue */}
+      {/* Floating Action Button */}
       <button
         onClick={handleReport}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white font-bold p-5 rounded-full shadow-lg"
+        aria-label="Report Issue"
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-colors"
       >
-        +
+        <Plus size={24} />
       </button>
     </div>
   );
