@@ -3,7 +3,8 @@
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
     animation: fadeIn 1s ease-out;
-    background-image: linear-gradient(45deg, #e1d3cf, #f0bf97); /* Add a soft gradient background */
+    background-image: linear-gradient(45deg, #1f1f1f, #2a2a2a);
+    /* Add a soft gradient background */
     min-height: 100vh; /* Ensure the full height of the screen is filled */
     padding: 20px;
     overflow-x: hidden;
@@ -27,7 +28,7 @@
   }
   
   .go-back-btn {
-    background-color: #ff7043;
+    background-color: #3845d0;
     color: white;
     padding: 12px 24px;
     border: none;
@@ -43,7 +44,7 @@
   }
   
   .go-back-btn:hover {
-    background-color: #ff5722;
+    background-color: #070781;
     transform: translateY(-5px); /* Lift button on hover */
   }
   
@@ -56,7 +57,7 @@
     font-size: 1.8rem;
     text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: #eee9e9;
     animation: fadeInUp 1s ease-out;
     font-weight: bold;
   }
@@ -69,7 +70,7 @@
   }
   
   .tab-btn {
-
+    color:black;
     padding: 12px 24px;
     background-color: #f0f0f0;
     border: none;
@@ -83,13 +84,13 @@
   }
   
   .tab-btn:hover {
-    background-color: #ff7043;
+    background-color: #08126e;
     color: white;
     transform: scale(1.1); /* Slight scale effect */
   }
   
   .tab-btn.active {
-    background-color: #ff5722;
+    background-color: #1512d3;
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow for active tab */
   }

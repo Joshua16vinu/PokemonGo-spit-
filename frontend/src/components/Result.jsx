@@ -27,14 +27,12 @@ export default function Result() {
   }
 
   const goback = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   return (
-    <div className="result-container">
-      <header className="header">
-        <h1 className="website-name">Travelify</h1>
-      </header>
+    <div className="result-container bg-gray-900 text-white">
+     
       <button className="go-back-btn" onClick={goback}>
         <span className="go-back-symbol">&#8592;</span> Go Back
       </button>
