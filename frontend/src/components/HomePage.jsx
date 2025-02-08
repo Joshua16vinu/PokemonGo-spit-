@@ -77,42 +77,33 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header Section with new layout */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 p-6">
-        <div className="flex justify-between max-w-[1400px] mx-auto">
-          {/* Title only shown in dashboard mode, aligned to the left */}
-          {viewMode === 'dashboard' && (
-            <h1 className="text-3xl font-bold">PokemonGo! Issue Reporting System</h1>
-          )}
-          
-          {/* Icon Navigation aligned to the right */}
-          <div className="flex gap-4 ml-auto">
-            <button
-              aria-label="Map View"
-              className={`p-3 rounded-md transition-colors ${
-                viewMode === 'map' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
-              }`}
-              onClick={() => setViewMode('map')}
-            >
-              <Map size={24} />
-            </button>
-            <button
-              aria-label="Dashboard View"
-              className={`p-3 rounded-md transition-colors ${
-                viewMode === 'dashboard' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
-              }`}
-              onClick={() => setViewMode('dashboard')}
-            >
-              <LayoutDashboard size={24} />
-            </button>
-          </div>
-        </div>
+      
+      {/* Icon Navigation aligned to the extreme right */}
+      <div className="flex  ml-auto">
+        <button
+          aria-label="Map View"
+          className={`p-3 rounded-md transition-colors m-2 ${
+            viewMode === 'map' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
+          }`}
+          onClick={() => setViewMode('map')}
+        >
+          <Map size={24} />
+        </button>
+        <button
+          aria-label="Dashboard View"
+          className={`p-3 rounded-md transition-colors m-2 ${
+            viewMode === 'dashboard' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
+          }`}
+          onClick={() => setViewMode('dashboard')}
+        >
+          <LayoutDashboard size={24} />
+        </button>
       </div>
 
       {/* Main Content Section */}
-      <div className="p-8">
+      <div className="">
         {viewMode === 'dashboard' ? (
-          <div className="flex flex-col md:flex-row min-h-screen">
+          <div className="flex flex-col md:flex-row min-h-screen p-8">
             <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
               <OtherNotifications />
             </div>
@@ -121,8 +112,7 @@ function HomePage() {
             </div>
           </div>
         ) : (
-          <div className="mt-8">
-           
+          <div className="">
             <MapView
               userLocation={location}
               eventLocations={eventLocations}
@@ -144,7 +134,7 @@ function HomePage() {
       {/* Logout Button */}
       <button
         onClick={handleLogout}
-        className="fixed bottom-16 right-6 bg-red-600 hover:bg-red-700 text-white font-bold p-4 rounded-full shadow-lg"
+        className="fixed top-2 right-3 bg-red-600 hover:bg-red-700 text-white font-bold p-3 rounded-full shadow-lg"
       >
         Logout
       </button>
