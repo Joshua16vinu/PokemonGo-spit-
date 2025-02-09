@@ -87,9 +87,7 @@ export default function Hotels({ query }) {
 
         const response = await fetch(`http://localhost:5000/fetch-hotels?query=${query}`, {
           method: "GET",
-          headers: {
-            Authorization: `Bearer `,
-          },
+          
           credentials: "include",
         });
 

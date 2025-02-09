@@ -84,9 +84,7 @@ const Restaurants = ({ query }) => {
           // If no data in IDB, fetch from the API
           const response = await fetch(`http://localhost:5000/fetch-restaurants?query=${query}`, {
             method: 'GET',
-            headers: {
-              Authorization: `Bearer`, // Update with your token if needed
-            },
+           
             credentials: 'include',
           });
 
