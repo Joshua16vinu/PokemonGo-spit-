@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
 dotenv.config();
 
 const userRoutes = require("./routes/userRoutes");
@@ -180,8 +181,8 @@ app.get("/fetch-attractions", async (req, res) => {
     }
 });
 
-const nodemailer = require('nodemailer');
-require('dotenv').config();
+
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
