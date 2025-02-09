@@ -15,12 +15,13 @@ function HomePage() {
   const [viewMode, setViewMode] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false); // Added for suggestions dropdown
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const dropdownRef = useRef(null);
 
-  // Reverse Geocoding Function to fetch area name based on latitude and longitude
+  // Reverse Geocoding Function
   const fetchAreaName = async (latitude, longitude) => {
     try {
       const response = await fetch(`https://geocode.xyz/${latitude},${longitude}?geoit=json`);
@@ -54,23 +55,21 @@ function HomePage() {
     }
   }, []);
 
-  const handleReport = () => {
+  const handleReports = () => {
     navigate('/report');
   };
 
-  // Handle logout
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Sign out from Firebase
-      logout(); // Update auth state in context
-      navigate('/'); // Navigate to login page after logout
+      await signOut(auth);
+      logout();
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
       alert('Logout failed. Please try again.');
     }
   };
 
-  // Search query handling
   const handleSearch = () => {
     if (searchQuery.trim() === '') {
       alert('Please enter a search term.');
@@ -128,52 +127,34 @@ function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white ">
-      {/* Icon Navigation aligned to the extreme right */}
+    <div className="min-h-screen bg-gray-900 text-white">
       <div className="flex ml-auto">
         <button
           aria-label="Map View"
-          className={`p-3 rounded-md transition-colors m-2 ${
-            viewMode === 'map' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
-          }`}
+          className={`p-3 rounded-md transition-colors m-2 ${viewMode === 'map' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'}`}
           onClick={() => setViewMode('map')}
         >
           <Map size={24} />
         </button>
         <button
           aria-label="Dashboard View"
-          className={`p-3 rounded-md transition-colors m-2 ${
-            viewMode === 'dashboard' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'
-          }`}
+          className={`p-3 rounded-md transition-colors m-2 ${viewMode === 'dashboard' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-800'}`}
           onClick={() => setViewMode('dashboard')}
         >
           <LayoutDashboard size={24} />
         </button>
       </div>
 
-      {/* Main Content Section */}
-      <div className="">
-        {viewMode === 'dashboard' ? (
-          <div className="flex flex-col md:flex-row min-h-screen p-8">
-            <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
-              <OtherNotifications />
-            </div>
-            <div className="md:w-1/3 w-full md:pl-4">
-              <LostAndFound area={area} />
-            </div>
-          </div>
-        ) : (
-          <div className="">
-            <MapView
-              userLocation={location}
-              eventLocations={eventLocations}
-              lostAndFoundLocations={lostAndFoundLocations}
-            />
-          </div>
-        )}
+      <div className="flex-container min-h-screen p-8">
+        <div className="notifications-section">
+          <OtherNotifications />
+        </div>
+        <div className="divider"></div>
+        <div className="lost-found-section">
+          <LostAndFound area={area} />
+        </div>
       </div>
 
-      {/* Search Bar */}
       <div className="search-bar" ref={dropdownRef}>
         <input
           type="text"
@@ -183,30 +164,43 @@ function HomePage() {
         />
         <button onClick={handleSearch}>Search</button>
         {showSuggestions && suggestions.length > 0 && (
-          <div className="suggestions-dropdown">
-            {suggestions.map((suggestion, index) => (
-              <div
-                key={index}
-                className="suggestion-item"
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                {suggestion}
-              </div>
-            ))}
-          </div>
+         <div className={`suggestions-dropdown ${showSuggestions ? 'show' : ''}`}>
+         {suggestions.map((suggestion, index) => (
+           <div
+             key={index}
+             className="suggestion-item"
+             onClick={() => handleSuggestionClick(suggestion)}
+           >
+             {suggestion}
+           </div>
+         ))}
+       </div>
+       
         )}
       </div>
-
-      {/* Floating Action Button */}
       <button
-        onClick={handleReport}
-        aria-label="Report Issue"
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-colors"
-      >
-        <Plus size={24} />
-      </button>
+  onClick={handleReports}
+  aria-label="Report Issue"
+  className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-colors flex items-center justify-center overflow-hidden"
+  onMouseEnter={() => setIsHovered(true)} // Set hover state on mouse enter
+  onMouseLeave={() => setIsHovered(false)} // Reset hover state on mouse leave
+>
+  {/* Pokémon Ball image */}
+  <img
+    src="/images/pokemon logo.png" // Replace with actual path to your Pokémon ball image
+    alt="Pokémon Ball"
+    className={`transition-all duration-300 transform ${isHovered ? "scale-0 opacity-0" : "scale-100 opacity-100"} w-12 h-12`} // Pokémon ball image animation
+  />
+  
+  {/* Text appears when hovered */}
+  <span
+    className={`transition-all duration-300 transform ${isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"} text-sm font-semibold ml-2`}
+  >
+    Add Report
+  </span>
+</button>
 
-      {/* Logout Button */}
+
       <button
         onClick={handleLogout}
         className="fixed top-2 right-3 bg-red-600 hover:bg-red-700 text-white font-bold p-3 rounded-full shadow-lg"
@@ -218,3 +212,5 @@ function HomePage() {
 }
 
 export default HomePage;
+
+
