@@ -36,12 +36,13 @@ function MapView() {
   useEffect(() => {
     const fetchReportsData = async () => {
       try {
-        const reportsCollection = collection(db, 'nam5');
+        const reportsCollection = collection(db, 'reports');
         const querySnapshot = await getDocs(reportsCollection);
     
         const fetchedReports = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
+          console.log (data)
           const locationParts = data.location.split(',');
     
           // Parse the latitude and longitude from the location string

@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Map, LayoutDashboard, Plus } from 'lucide-react';
 import OtherNotifications from './OtherNotifications';
 import LostAndFound from './LostAndFound';
-import MapView from './MapView';
-import { signOut } from 'firebase/auth'; // Import signOut from Firebase
-import { auth } from '../firebase'; // Firebase authentication instance
-import { useAuth } from './AuthContext'; // Assuming you have AuthContext to manage authentication state
-import "./homefile.css"
+import MapView from './MapView';  // Import your MapView component
+import { signOut } from 'firebase/auth'; 
+import { auth } from '../firebase'; 
+import { useAuth } from './AuthContext'; 
+import './homefile.css';
 
 function HomePage() {
   const [location, setLocation] = useState(null);
@@ -91,18 +91,15 @@ function HomePage() {
 
     try {
       const response = await fetch(`http://localhost:5000/search-suggestions?query=${query}`);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-
       if (data.length === 0) {
         setSuggestions(['No matches found']);
       } else {
         setSuggestions(data);
       }
-
       setShowSuggestions(true);
     } catch (err) {
       console.error('Error fetching suggestions:', err.message);
@@ -145,15 +142,19 @@ function HomePage() {
         </button>
       </div>
 
-      <div className="flex-container min-h-screen p-8">
-        <div className="notifications-section">
-          <OtherNotifications />
+      {viewMode === 'map' ? (
+        <MapView locations={eventLocations.concat(lostAndFoundLocations)} /> // Display the map view here
+      ) : (
+        <div className="flex-container min-h-screen p-8">
+          <div className="notifications-section">
+            <OtherNotifications />
+          </div>
+          <div className="divider"></div>
+          <div className="lost-found-section">
+            <LostAndFound area={area} />
+          </div>
         </div>
-        <div className="divider"></div>
-        <div className="lost-found-section">
-          <LostAndFound area={area} />
-        </div>
-      </div>
+      )}
 
       <div className="search-bar" ref={dropdownRef}>
         <input
@@ -164,42 +165,38 @@ function HomePage() {
         />
         <button onClick={handleSearch}>Search</button>
         {showSuggestions && suggestions.length > 0 && (
-         <div className={`suggestions-dropdown ${showSuggestions ? 'show' : ''}`}>
-         {suggestions.map((suggestion, index) => (
-           <div
-             key={index}
-             className="suggestion-item"
-             onClick={() => handleSuggestionClick(suggestion)}
-           >
-             {suggestion}
-           </div>
-         ))}
-       </div>
-       
+          <div className={`suggestions-dropdown ${showSuggestions ? 'show' : ''}`}>
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="suggestion-item"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </div>
+            ))}
+          </div>
         )}
       </div>
-      <button
-  onClick={handleReports}
-  aria-label="Report Issue"
-  className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-colors flex items-center justify-center overflow-hidden"
-  onMouseEnter={() => setIsHovered(true)} // Set hover state on mouse enter
-  onMouseLeave={() => setIsHovered(false)} // Reset hover state on mouse leave
->
-  {/* Pokémon Ball image */}
-  <img
-    src="/images/pokemon logo.png" // Replace with actual path to your Pokémon ball image
-    alt="Pokémon Ball"
-    className={`transition-all duration-300 transform  w-12 h-12`} // Pokémon ball image animation
-  />
-  
-  {/* Text appears when hovered */}
-  <span
-    className={`transition-all duration-300 transform ${isHovered ? "size-10 translate-x-0" : "size-0 translate-x-4"} text-sm font-semibold ml-2`}
-  >
-    Add Report
-  </span>
-</button>
 
+      <button
+        onClick={handleReports}
+        aria-label="Report Issue"
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-colors flex items-center justify-center overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)} 
+        onMouseLeave={() => setIsHovered(false)} 
+      >
+        <img
+          src="/images/pokemon logo.png"
+          alt="Pokémon Ball"
+          className="transition-all duration-300 transform w-12 h-12"
+        />
+        <span
+          className={`transition-all duration-300 transform ${isHovered ? "size-10 translate-x-0" : "size-0 translate-x-4"} text-sm font-semibold ml-2`}
+        >
+          Add Report
+        </span>
+      </button>
 
       <button
         onClick={handleLogout}
@@ -212,5 +209,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-
