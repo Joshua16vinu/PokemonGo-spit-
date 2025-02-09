@@ -5,6 +5,8 @@ function ReportPage() {
   const [location, setLocation] = useState("");
   const [status] = useState("pending");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [issueType, setIssueType] = useState(""); // Track issueType
+  const [description, setDescription] = useState(""); // Track description
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -54,7 +56,7 @@ function ReportPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!imageBase64 || !location) {
+    if (!imageBase64 || !location || !issueType || !description) {
       alert("Please provide all required details.");
       return;
     }
@@ -73,8 +75,9 @@ function ReportPage() {
       // Append all required fields
       formData.append("image", imageFile);
       formData.append("email", "harshitheroh5@gmail.com");
-      formData.append("issueType", "store_issue"); // Added issueType as required by backend
+      formData.append("issueType", issueType); // Use the selected issueType
       formData.append("location", location);
+      formData.append("description", description); // Add description field
 
       const response = await fetch("http://localhost:5000/api/reports/submit", {
         method: 'POST',
@@ -87,6 +90,8 @@ function ReportPage() {
         alert("Report submitted successfully!");
         // Reset form
         setImageBase64("");
+        setIssueType("");
+        setDescription("");
         e.target.reset();
       } else {
         throw new Error(data.error || "Failed to submit report");
@@ -113,6 +118,34 @@ function ReportPage() {
               className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
             />
           </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-medium">Issue Type:</label>
+            <select
+              value={issueType}
+              onChange={(e) => setIssueType(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
+              required
+            >
+              <option value="">Select Issue Type</option>
+              <option value="lnf">Lost and Found (lnf)</option>
+              <option value="ann">Announcements (ann)</option>
+              <option value="e">Events (e)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-medium">Description:</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows="4"
+              className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
+              placeholder="Describe the issue here"
+              required
+            />
+          </div>
+
           <div>
             <label className="block mb-2 text-sm font-medium">Upload Image:</label>
             <input
@@ -123,6 +156,7 @@ function ReportPage() {
               className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
             />
           </div>
+
           <div>
             <label className="block mb-2 text-sm font-medium">Timestamp:</label>
             <input
@@ -132,6 +166,7 @@ function ReportPage() {
               className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none"
             />
           </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
