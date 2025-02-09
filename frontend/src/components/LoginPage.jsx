@@ -61,16 +61,23 @@ function LoginPage() {
               {/* Login Form (Foreground) */}
               <div className="relative z-10 w-full max-w-5xl shadow-lg rounded-lg backdrop-blur-md bg-gray-900 bg-opacity-80">
                 <div className="flex">
-                  <div className="w-1/2 p-8 flex flex-col justify-center text-white">
-                    {/* Pokémon Image */}
-                    <img 
-                      src="/images/logo1.png" // Replace this with your Pokémon image URL
-                      alt="Pokémon"
-                      className="w-40 h-auto mx-auto mb-4" // Adjust size and spacing as needed
-                    />
-                    <h2 className="text-3xl font-bold mb-4 text-center">Welcome to PokemonGo!</h2>
-                   
-                  </div>
+                <div className="w-1/2 p-8 flex flex-col justify-center text-white relative">
+  {/* Pokémon Image (Logo) */}
+  <img 
+    src="/images/logo1.png" 
+    alt="Pokémon"
+    className="w-40 h-auto mx-auto mb-2 transform translate-x-4"
+  />
+
+  {/* Welcome Image (Slightly Overlapped) */}
+  <img 
+    src="/images/pokemon_go.png" 
+    alt="Welcome to PokemonGo!"
+    className="w-60 h-auto mx-auto -mt-12" // Move up to overlap
+  />
+</div>
+
+
 
                   <div className="w-1/2 bg-gray-800 p-8">
                     <h2 className="text-3xl font-bold mb-6 text-center text-white">{isSignUp ? "Sign Up" : "Login"}</h2>
