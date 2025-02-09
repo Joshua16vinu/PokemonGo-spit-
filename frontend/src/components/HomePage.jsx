@@ -7,7 +7,62 @@ import MapView from './MapView';  // Import your MapView component
 import { signOut } from 'firebase/auth'; 
 import { auth } from '../firebase'; 
 import { useAuth } from './AuthContext'; 
+import { User } from 'lucide-react';
 import './homefile.css';
+
+const ProfileMenu = ({ onLogout }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+  const { userEmail } = useAuth(); 
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-4 right-3 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors"
+      >
+        <User size={24} />
+      </button>
+
+      {isOpen && (
+        <div className="fixed top-14 right-3 w-80 bg-gray-800 rounded-lg shadow-lg py-2 border border-gray-700 z-50">
+          <div className="px-4 py-3 border-b border-gray-700">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gray-600 p-3 rounded-full">
+                <User size={24} className="text-gray-300" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-200">Profile</p>
+                <p className="text-xs text-gray-400">{userEmail || 'Guest User'}</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Menu Items */}
+          <div className="px-4 py-2">
+            <button
+              onClick={onLogout}
+              className="w-full text-left px-2 py-2 text-lg text-red-400 hover:bg-gray-700 rounded transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 function HomePage() {
   const [location, setLocation] = useState(null);
@@ -142,6 +197,9 @@ function HomePage() {
         </button>
       </div>
 
+      {/* Profile Menu */}
+      <ProfileMenu onLogout={handleLogout} className="z-50" />
+
       {viewMode === 'map' ? (
         <MapView locations={eventLocations.concat(lostAndFoundLocations)} /> // Display the map view here
       ) : (
@@ -198,12 +256,6 @@ function HomePage() {
         </span>
       </button>
 
-      <button
-        onClick={handleLogout}
-        className="fixed top-2 right-3 bg-red-600 hover:bg-red-700 text-white font-bold p-3 rounded-full shadow-lg"
-      >
-        Logout
-      </button>
     </div>
   );
 }
