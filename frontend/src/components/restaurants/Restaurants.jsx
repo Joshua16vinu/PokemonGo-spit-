@@ -217,7 +217,7 @@ const Restaurants = ({ query }) => {
             <Marker
               key={index}
               position={[parseFloat(location.latitude), parseFloat(location.longitude)]}
-              icon={new Icon({ iconUrl: '/images/download1.png', iconSize: [30, 30] })}
+              icon={new Icon({ iconUrl: '/images/restaurant.png', iconSize: [50, 50] })}
               eventHandlers={{
                 click: () => handleMarkerClick(location),
               }}

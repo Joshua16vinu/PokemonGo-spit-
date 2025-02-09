@@ -138,8 +138,8 @@ export default function Hotels({ query }) {
   };
 
   const hotelIcon = new Icon({
-    iconUrl: '/images/download1.png',
-    iconSize: [30, 30],
+    iconUrl: '/images/hotel.png',
+    iconSize: [50, 50],
   });
 
   function MapUpdater() {
@@ -203,7 +203,7 @@ export default function Hotels({ query }) {
           {filteredLocations.map((location, index) => (
             <div key={index} className="hotel-card">
               <img 
-                src={location.photo?.images?.large?.url || "/images/restaurant.png"} 
+                src={location.photo?.images?.large?.url || "/images/hotel.png"} 
                 alt={location.name || 'Restaurant image'} 
                 className="restaurant-image" 
                 onClick={() => handleImageClick(location.photo?.images?.original?.url)} 

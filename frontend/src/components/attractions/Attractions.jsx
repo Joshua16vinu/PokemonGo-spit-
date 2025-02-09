@@ -120,8 +120,8 @@ const Attractions = ({ query }) => {
   };
 
   const attractionIcon = new Icon({
-    iconUrl: '/images/attractive.jpeg',
-    iconSize: [30, 30],
+    iconUrl: '/images/image.png',
+    iconSize: [50, 50],
   });
 
   function MapUpdater() {
@@ -164,7 +164,7 @@ const Attractions = ({ query }) => {
           {filteredLocations.map((location, index) => (
             <div key={index} className="location-card">
               <img 
-                src={location.photo?.images?.large?.url || "/images/default.jpg"} 
+                src={location.photo?.images?.large?.url || "/images/image.png"} 
                 alt={location.name || 'Location image'} 
                 className="location-image"
                 onClick={() => setZoomedImage(location.photo?.images?.original?.url)} 
