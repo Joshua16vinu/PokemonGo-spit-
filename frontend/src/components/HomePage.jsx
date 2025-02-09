@@ -189,12 +189,12 @@ function HomePage() {
   <img
     src="/images/pokemon logo.png" // Replace with actual path to your Pokémon ball image
     alt="Pokémon Ball"
-    className={`transition-all duration-300 transform ${isHovered ? "scale-0 opacity-0" : "scale-100 opacity-100"} w-12 h-12`} // Pokémon ball image animation
+    className={`transition-all duration-300 transform  w-12 h-12`} // Pokémon ball image animation
   />
   
   {/* Text appears when hovered */}
   <span
-    className={`transition-all duration-300 transform ${isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"} text-sm font-semibold ml-2`}
+    className={`transition-all duration-300 transform ${isHovered ? "size-10 translate-x-0" : "size-0 translate-x-4"} text-sm font-semibold ml-2`}
   >
     Add Report
   </span>
