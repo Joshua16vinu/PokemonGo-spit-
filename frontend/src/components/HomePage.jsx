@@ -154,7 +154,7 @@ function HomePage() {
           <LostAndFound area={area} />
         </div>
       </div>
-
+      <h1 className="text-2xl font-semibold p-8">Trip Planning</h1>
       <div className="search-bar" ref={dropdownRef}>
         <input
           type="text"
