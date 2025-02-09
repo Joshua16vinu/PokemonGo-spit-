@@ -145,16 +145,28 @@ function HomePage() {
         </button>
       </div>
 
-      <div className="flex-container min-h-screen p-8">
-        <div className="notifications-section">
-          <OtherNotifications />
-        </div>
-        <div className="divider"></div>
-        <div className="lost-found-section">
-          <LostAndFound area={area} />
-        </div>
+    {/* Rest of the components */}
+    <div className="">
+        {viewMode === 'dashboard' ? (
+          <div className="flex flex-col md:flex-row min-h-screen p-8">
+            <div className="md:w-3/4 w-full md:pr-4 mb-6 md:mb-0">
+              <OtherNotifications />
+            </div>
+            <div className="md:w-1/3 w-full md:pl-4">
+              <LostAndFound area={area} />
+            </div>
+          </div>
+        ) : (
+          <div className="">
+            <MapView
+              userLocation={location}
+              eventLocations={eventLocations}
+              lostAndFoundLocations={lostAndFoundLocations}
+            />
+          </div>
+        )}
       </div>
-      <h1 className="text-2xl font-semibold p-8">Trip Planning</h1>
+
       <div className="search-bar" ref={dropdownRef}>
         <input
           type="text"
@@ -164,18 +176,17 @@ function HomePage() {
         />
         <button onClick={handleSearch}>Search</button>
         {showSuggestions && suggestions.length > 0 && (
-         <div className={`suggestions-dropdown ${showSuggestions ? 'show' : ''}`}>
-         {suggestions.map((suggestion, index) => (
-           <div
-             key={index}
-             className="suggestion-item"
-             onClick={() => handleSuggestionClick(suggestion)}
-           >
-             {suggestion}
-           </div>
-         ))}
-       </div>
-       
+          <div className="suggestions-dropdown">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="suggestion-item"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </div>
+            ))}
+          </div>
         )}
       </div>
       <button
@@ -189,12 +200,12 @@ function HomePage() {
   <img
     src="/images/pokemon logo.png" // Replace with actual path to your Pokémon ball image
     alt="Pokémon Ball"
-    className={`transition-all duration-300 transform  w-12 h-12`} // Pokémon ball image animation
+    className={`transition-all duration-300 transform ${isHovered ? "scale-0 opacity-0" : "scale-100 opacity-100"} w-12 h-12`} // Pokémon ball image animation
   />
   
   {/* Text appears when hovered */}
   <span
-    className={`transition-all duration-300 transform ${isHovered ? "size-10 translate-x-0" : "size-0 translate-x-4"} text-sm font-semibold ml-2`}
+    className={`transition-all duration-300 transform ${isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"} text-sm font-semibold ml-2`}
   >
     Add Report
   </span>
