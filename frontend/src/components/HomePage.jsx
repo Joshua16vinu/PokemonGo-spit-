@@ -208,7 +208,7 @@ function HomePage() {
             <OtherNotifications />
           </div>
           <div className="divider"></div>
-          <div className="lost-found-section">
+          <div className="lost-found-section border-l-white border-l-2">
             <LostAndFound area={area} />
           </div>
         </div>
