@@ -64,7 +64,7 @@ const Attractions = ({ query }) => {
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/fetch-attractions?query=${query}`, {
+        const response = await fetch(`http://68.183.82.234:5000/fetch-attractions?query=${query}`, {
           method: 'GET',
          
           credentials: 'include',
