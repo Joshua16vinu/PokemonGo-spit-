@@ -145,7 +145,7 @@ function HomePage() {
     }
 
     try {
-      const response = await fetch(`http://68.183.82.234:5000/search-suggestions?query=${query}`);
+      const response = await fetch(`http://139.59.87.132:5000/search-suggestions?query=${query}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
