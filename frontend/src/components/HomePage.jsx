@@ -9,7 +9,7 @@ import { auth } from '../firebase';
 import { useAuth } from './AuthContext'; 
 import { User } from 'lucide-react';
 import './homefile.css';
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const ProfileMenu = ({ onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
@@ -145,7 +145,7 @@ function HomePage() {
     }
 
     try {
-      const response = await fetch("http://139.59.87.132:5000/search-suggestions", {
+      const response = await fetch(`${BASE_URL}/search-suggestions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

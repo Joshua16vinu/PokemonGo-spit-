@@ -7,7 +7,7 @@ import { useAuth } from "./AuthContext"; // Import AuthContext hook
 import { signOut } from "firebase/auth";
 import Ballpit from "./Ballpit"; // Ensure this import is correct
 import { useContext } from "react";
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

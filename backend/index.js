@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 dotenv.config();
-
+const path = require("path");
 const userRoutes = require("./routes/userRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 
@@ -15,7 +15,19 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  credentials: true
+}));
+const path = require("path");
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
+  });
+}
 
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 

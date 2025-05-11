@@ -4,7 +4,7 @@ import "../restaurants/restaurant.css";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const Restaurants = ({ query }) => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +82,7 @@ const Restaurants = ({ query }) => {
           setLoading(false);
         } else {
           // If no data in IDB, fetch from the API
-          const response = await fetch("http://139.59.87.132:5000/fetch-restaurants", {
+          const response = await fetch(`${BASE_URL}/fetch-restaurants`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

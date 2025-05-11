@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../hotels/hotel.css';
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 export default function Hotels({ query }) {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +85,7 @@ export default function Hotels({ query }) {
           return;
         }
 
-        const response = await fetch("http://139.59.87.132:5000/fetch-hotels", {
+        const response = await fetch(`${BASE_URL}/fetch-hotels`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

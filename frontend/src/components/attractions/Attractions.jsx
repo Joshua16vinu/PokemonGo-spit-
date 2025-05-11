@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../attractions/attraction.css';
-
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const Attractions = ({ query }) => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ const Attractions = ({ query }) => {
           return;
         }
 
-        const response = await fetch(`http://139.59.87.132:5000/fetch-attractions?query=${query}`, {
+        const response = await fetch(`${BASE_URL}/fetch-attractions?query=${query}`, {
           method: 'GET',
          
           credentials: 'include',
