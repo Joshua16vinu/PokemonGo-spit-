@@ -85,11 +85,15 @@ export default function Hotels({ query }) {
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/fetch-hotels?query=${query}`, {
-          method: "GET",
-          
+        const response = await fetch("http://139.59.87.132:5000/fetch-hotels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           credentials: "include",
+          body: JSON.stringify({ query }),
         });
+        
 
         if (response.status === 401) {
           setError("Unauthorized: Please log in again");

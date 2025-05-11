@@ -82,11 +82,16 @@ const Restaurants = ({ query }) => {
           setLoading(false);
         } else {
           // If no data in IDB, fetch from the API
-          const response = await fetch(`http://localhost:5000/fetch-restaurants?query=${query}`, {
-            method: 'GET',
-           
-            credentials: 'include',
+          const response = await fetch("http://139.59.87.132:5000/fetch-restaurants", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ query }),
           });
+          
+          
 
           if (response.status === 401) {
             console.error("Unauthorized: Please log in again");

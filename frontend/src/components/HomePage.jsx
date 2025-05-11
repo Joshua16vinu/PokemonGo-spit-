@@ -145,7 +145,13 @@ function HomePage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/search-suggestions?query=${query}`);
+      const response = await fetch("http://139.59.87.132:5000/search-suggestions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
