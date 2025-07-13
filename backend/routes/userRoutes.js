@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const { createUser, loginUser } = require(path.join(__dirname, "../Database/usernodel"));
+const { createUser, loginUser } = require(path.join(__dirname, "../Database/usermodel"));
 
 const router = express.Router();
 
