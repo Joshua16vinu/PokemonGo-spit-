@@ -134,40 +134,72 @@ function HomePage() {
     navigate(`/results?query=${searchQuery}`);
   };
 
-  const handleInputChange = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+  // const handleInputChange = async (e) => {
+  //   const query = e.target.value;
+  //   setSearchQuery(query);
 
-    if (query.trim() === '') {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
+  //   if (query.trim() === '') {
+  //     setSuggestions([]);
+  //     setShowSuggestions(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/search-suggestions`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ query }),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+  //     const data = await response.json();
+  //     if (data.length === 0) {
+  //       setSuggestions(['No matches found']);
+  //     } else {
+  //       setSuggestions(data);
+  //     }
+  //     setShowSuggestions(true);
+  //   } catch (err) {
+  //     console.error('Error fetching suggestions:', err.message);
+  //     setSuggestions([`Error: ${err.message}`]);
+  //     setShowSuggestions(true);
+  //   }
+  // };
+const handleInputChange = async (e) => {
+  const query = e.target.value;
+  setSearchQuery(query);
+
+  if (query.trim() === '') {
+    setSuggestions([]);
+    setShowSuggestions(false);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/search-suggestions?query=${encodeURIComponent(query)}`, {
+      method: "GET", // 🔄 Change to GET
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    try {
-      const response = await fetch(`${BASE_URL}/search-suggestions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.length === 0) {
-        setSuggestions(['No matches found']);
-      } else {
-        setSuggestions(data);
-      }
-      setShowSuggestions(true);
-    } catch (err) {
-      console.error('Error fetching suggestions:', err.message);
-      setSuggestions([`Error: ${err.message}`]);
-      setShowSuggestions(true);
+    const data = await response.json();
+    if (data.length === 0) {
+      setSuggestions(['No matches found']);
+    } else {
+      setSuggestions(data);
     }
-  };
+    setShowSuggestions(true);
+  } catch (err) {
+    console.error('Error fetching suggestions:', err.message);
+    setSuggestions([`Error: ${err.message}`]);
+    setShowSuggestions(true);
+  }
+};
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
