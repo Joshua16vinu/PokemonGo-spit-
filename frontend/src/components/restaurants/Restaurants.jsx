@@ -82,13 +82,13 @@ const Restaurants = ({ query }) => {
           setLoading(false);
         } else {
           // If no data in IDB, fetch from the API
-          const response = await fetch(`${BASE_URL}/fetch-restaurants`, {
+          const response = await fetch(`${BASE_URL}/fetch-restaurants?query=${query}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
             credentials: "include",
-            body: JSON.stringify({ query }),
+           
           });
           
           

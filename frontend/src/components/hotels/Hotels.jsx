@@ -85,13 +85,13 @@ export default function Hotels({ query }) {
           return;
         }
 
-        const response = await fetch(`${BASE_URL}/fetch-hotels`, {
+        const response = await fetch(`${BASE_URL}/fetch-hotels?query=${query}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ query }),
+          
         });
         
 
