@@ -86,7 +86,7 @@ export default function Hotels({ query }) {
         }
 
         const response = await fetch(`${BASE_URL}/fetch-hotels`, {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
