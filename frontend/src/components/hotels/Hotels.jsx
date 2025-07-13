@@ -78,7 +78,7 @@ export default function Hotels({ query }) {
       try {
         const cachedData = await getFromIndexedDB(query);
         if (cachedData) {
-          console.log("Data loaded from IndexedDB");
+          // console.log("Data loaded from IndexedDB");
           setLocations(cachedData.data);
           setMapCenter(calculateMapCenter(cachedData.data));
           setLoading(false);

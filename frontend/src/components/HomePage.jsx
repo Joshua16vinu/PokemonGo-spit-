@@ -130,7 +130,7 @@ function HomePage() {
       alert('Please enter a search term.');
       return;
     }
-    console.log(searchQuery);
+    // console.log(searchQuery);
     navigate(`/results?query=${searchQuery}`);
   };
 

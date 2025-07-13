@@ -48,7 +48,7 @@ function CardDetailPage() {
   const fetchPlaceName = async (lat, lon) => {
     const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${GOOGLE_MAPS_API_KEY}`);
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     if (data.status === 'OK') {
       setPlaceName(data.results[0].formatted_address);
     } else {

@@ -33,7 +33,7 @@ const Restaurants = ({ query }) => {
     const db = await openDatabase();
     const store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
     await store.put(data, query); // Use query as key
-    console.log('Data stored in IndexedDB');
+    // console.log('Data stored in IndexedDB');
   }, [openDatabase, query]);
 
   // Retrieve data from IndexedDB
@@ -76,7 +76,7 @@ const Restaurants = ({ query }) => {
         // Check if data is available in IndexedDB first
         const cachedData = await getDataFromIDB();
         if (cachedData) {
-          console.log('Using cached data');
+          // console.log('Using cached data');
           setLocations(cachedData);
           setMapCenter(calculateMapCenter(cachedData));
           setLoading(false);

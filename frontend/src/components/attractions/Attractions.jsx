@@ -57,7 +57,7 @@ const Attractions = ({ query }) => {
         const cachedData = await db.get('attractions', query);
 
         if (cachedData) {
-          console.log('Data loaded from IndexedDB');
+          // console.log('Data loaded from IndexedDB');
           setLocations(cachedData.locations);
           setMapCenter(calculateMapCenter(cachedData.locations)); // Set center based on cached data
           setLoading(false);
@@ -84,7 +84,7 @@ const Attractions = ({ query }) => {
 
           // Save to IndexedDB
           await db.put('attractions', { query, locations: data.data });
-          console.log('Data saved to IndexedDB');
+          // console.log('Data saved to IndexedDB');
         } else {
           setLocations([]);
         }

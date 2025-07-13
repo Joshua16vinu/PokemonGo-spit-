@@ -97,7 +97,7 @@ function ReportPage() {
 
       // After the report is added, store the generated reportId
       const reportId = reportRef.id;
-      console.log("Report ID:", reportId);  // You can log it or use it as needed.
+      // console.log("Report ID:", reportId);  // You can log it or use it as needed.
 
       // Optionally, you can update the report document to include the reportId (if needed)
       await updateDoc(doc(db, "reports", reportId), {

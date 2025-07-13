@@ -46,7 +46,7 @@ function LostAndFound() {
         const filteredItems = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          console.log(data);
+          // console.log(data);
           // Only push items where the issueType is "lnf"
           if (data.issueType === "lnf") {
             filteredItems.push({

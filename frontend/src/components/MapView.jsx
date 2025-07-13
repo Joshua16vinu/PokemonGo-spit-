@@ -42,7 +42,7 @@ function MapView() {
         const fetchedReports = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          console.log (data)
+          // console.log (data)
           const locationParts = data.location.split(',');
     
           // Parse the latitude and longitude from the location string
