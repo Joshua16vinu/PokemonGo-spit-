@@ -16,11 +16,21 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const allowedOrigins = [
+  "https://pokemon-go-spit-git-main-tanmaychavan14s-projects.vercel.app",
+  "http://localhost:3000" // optional for local testing
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
-
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/build")));
