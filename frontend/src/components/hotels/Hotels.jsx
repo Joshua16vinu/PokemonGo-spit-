@@ -85,15 +85,49 @@ export default function Hotels({ query }) {
           return;
         }
 
-        const response = await fetch(`${BASE_URL}/fetch-hotels?query=${query}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
+        // const response = await fetch(`${BASE_URL}/fetch-hotels?query=${query}`, {
+        //   method: "GET",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   credentials: "include",
           
-        });
+        // });
+        app.get("/fetch-hotels", async (req, res) => {
+    try {
+        const query = req.query.query || '';  
+        const locationData = await geocode(query);
+        if (locationData.length === 0) {
+            return res.status(400).json({ message: "No location found" });
+        }
+
+        const latitude = locationData[0].lat;
+        const longitude = locationData[0].lon;
+
+        const url = 'https://travel-advisor.p.rapidapi.com/hotels/list-by-latlng';
+        const params = {
+            latitude: latitude,
+            longitude: longitude,
+            lunit: 'km',
+            currency: 'USD',
+            lang: 'en_US'
+            // Removed 'search' parameter as it might not be supported
+        };
+
+        const headers = {
+            'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+            'x-rapidapi-host': process.env.RAPIDAPI_HOST
+        };
         
+        const response = await axios.get(url, { params, headers });
+        console.log("Hotel API Response:", response.data); // Add logging
+        res.status(200).json(response.data);
+    } catch (err) {
+        console.error("Error fetching hotels:", err);
+        console.error("Error details:", err.response?.data); // More detailed error logging
+        res.status(500).json({ message: "Error fetching hotels", details: err.message });
+    }
+});
 
         if (response.status === 401) {
           setError("Unauthorized: Please log in again");
