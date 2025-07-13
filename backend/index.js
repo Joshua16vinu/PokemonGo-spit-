@@ -17,8 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 const allowedOrigins = [
-  "https://pokemon-go-spit-git-main-tanmaychavan14s-projects.vercel.app",
-  "http://localhost:3000" // optional for local testing
+  "https://pokemon-go-spit-git-main-tanmaychavan14s-projects.vercel.app",  // <== this is your preview URL
+  "https://pokemon-go-spit.vercel.app",  // <== this is the production domain
+  "http://localhost:3000"
 ];
 
 app.use(cors({
