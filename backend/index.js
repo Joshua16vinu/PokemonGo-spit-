@@ -7,7 +7,7 @@ dotenv.config();
 const path = require("path");
 const userRoutes = require("./routes/userRoutes");
 const reportRoutes = require("./routes/reportRoutes");
-
+const axios = require('axios');
 const app = express();
 app.use(cors());
 // Increase the request size limit
@@ -33,15 +33,15 @@ app.use(cors({
   credentials: true
 }));
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
-  });
-}
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "../frontend/build")));
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
+//   });
+// }
+// app.get("/", (req, res) => {
+//   res.send("Server is running");
+// });
 
 
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
@@ -54,7 +54,7 @@ app.get("/", (req, res) => {
 });
 
 // Import axios
-const axios = require('axios'); // Add this line
+ // Add this line
 
 // Function for geocoding using OpenStreetMap Nominatim API
 async function geocode(address) {
