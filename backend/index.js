@@ -17,12 +17,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 const allowedOrigins = [
-  "https://pokemon-go-spit-git-main-tanmaychavan14s-projects.vercel.app",  // <== this is your preview URL
-  "https://pokemon-go-spit.vercel.app",  // <== this is the production domain
+  "https://pokemon-go-spit.vercel.app",
+  "https://pokemon-go-spit-git-main-tanmaychavan14s-projects.vercel.app",
   "http://localhost:3000"
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -30,8 +30,17 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// 👇 VERY IMPORTANT: Add this before routes
+app.options("*", cors(corsOptions));
+
+// 👇 Then apply globally
+app.use(cors(corsOptions));
+
 
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "../frontend/build")));
