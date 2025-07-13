@@ -146,7 +146,7 @@ function HomePage() {
 
     try {
       const response = await fetch(`${BASE_URL}search-suggestions`, {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
