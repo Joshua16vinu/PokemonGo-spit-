@@ -19,5 +19,5 @@ A smart, location-based event sharing platform that empowers users to discover, 
 - **Storage**: Firebase Storage  
 - **Maps & Geolocation**: OpenStreetMap, External APIs  
 
-## 📦 Project Structure
+
 
