@@ -7,7 +7,6 @@ A smart, location-based event sharing platform that empowers users to discover, 
 - 🗺️ **Interactive Map Integration** with OpenStreetMap for intuitive navigation and event discovery  
 - 📍 **Real-Time Geolocation** for user positioning and nearby event visibility  
 - 🧭 **Categorized Event Filtering** — Explore events by type: Tech, Emergency, Social  
-- 🖼️ **Photo Uploads** via Firebase Storage for a richer event experience  
 - 🔍 **Nearby Places Search** using external APIs for enhanced location context  
 - 💬 **Community Forums** for event-specific discussions and feedback  
 - 🔐 **Secure Login** using Google Authentication
