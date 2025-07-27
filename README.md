@@ -48,7 +48,7 @@ Make sure you have the following installed:
 - **Google Developer Console Credentials** (OAuth 2.0)
 - **RapidAPI Key** for [Travel Advisor API](https://rapidapi.com/apidojo/api/travel-advisor/)
 
----
+
 
 ## 🚀 Installation & Setup
 
@@ -57,39 +57,18 @@ Make sure you have the following installed:
 ```bash
 git clone <repository-url>
 cd PokemonGo-spit
-
-2. Backend Setup
-bash
-Copy
-Edit
-cd backend
+``` 
+### 1. Backend Setup
+```bash
+ cd backend
 npm install
-
-Start the server:
-
-bash
-Copy
-Edit
-npm start
-3. Frontend Setup
-bash
-Copy
-Edit
+npm run dev
+```
+### 3. Frontend Setup
+```bash
 cd frontend
 npm install
 npm run dev
-
-🔐 Authentication Flow
-User logs in via Google
-
-Frontend receives user token from Google
-
-Sends token to backend for verification
-
-Backend issues its own JWT and returns user data
-
-Frontend stores user session and allows posting/viewing events
-
-
-
+```
+---
 
